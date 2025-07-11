@@ -13,8 +13,6 @@ const __dirname = path.resolve();
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "client", "dist")));
-
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
@@ -70,16 +68,20 @@ app.get("/api", async (req, res) => {
   }
 });
 
-// app.get("*", (req, res) => {
-//   const indexPath = path.join(__dirname, "client", "dist", "index.html");
-//   if (!fs.existsSync(indexPath)) {
-//     return res
-//       .status(500)
-//       .send("index.html not found. Did you build the frontend?");
-//   }
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "client", "dist")));
 
-//   res.sendFile(indexPath);
-// });
+  app.get("*", (req, res) => {
+    const indexPath = path.join(__dirname, "client", "dist", "index.html");
+    if (!fs.existsSync(indexPath)) {
+      return res
+        .status(500)
+        .send("index.html not found. Did you build the frontend?");
+    }
+
+    res.sendFile(indexPath);
+  });
+}
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
