@@ -69,17 +69,10 @@ app.get("/api", async (req, res) => {
 });
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "client", "dist")));
+  app.use(express.static(path.join(__dirname, "/client/dist")));
 
-  app.get("*", (req, res) => {
-    const indexPath = path.join(__dirname, "client", "dist", "index.html");
-    if (!fs.existsSync(indexPath)) {
-      return res
-        .status(500)
-        .send("index.html not found. Did you build the frontend?");
-    }
-
-    res.sendFile(indexPath);
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
   });
 }
 
