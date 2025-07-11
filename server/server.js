@@ -21,6 +21,14 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/client/dist")));
+
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+  });
+}
+
 app.post("/api", async (req, res) => {
   try {
     const { title } = req.body;
@@ -67,14 +75,6 @@ app.get("/api", async (req, res) => {
     });
   }
 });
-
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/client/dist")));
-
-  app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
-  });
-}
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
